@@ -1,0 +1,115 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Legenda.App.App"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#487E8B"/>
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <Style Selector="SelectableTextBlock">
+            <Setter Property="SelectionBrush" Value="#487E8B"/>
+            <Setter Property="SelectionForegroundBrush" Value="White"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="SelectionBrush" Value="#487E8B"/>
+            <Setter Property="SelectionForegroundBrush" Value="White"/>
+        </Style>
+        <Style Selector="CheckBox">
+            <Style.Resources>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#487E8B"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#396A76"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#396A76"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#315F69"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#315F69"/>
+                <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked" Color="#FFFFFF"/>
+                <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver" Color="#FFFFFF"/>
+                <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressed" Color="#FFFFFF"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUnchecked" Color="#FCFDFD"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUnchecked" Color="#7EA5AE"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver" Color="#E5EFF2"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" Color="#487E8B"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPressed" Color="#CEDFE4"/>
+                <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressed" Color="#396A76"/>
+            </Style.Resources>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="10,0,0,0"/>
+            <Setter Property="FontFamily" Value="Inter"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#27373D"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="DatePicker">
+            <Setter Property="Background" Value="#FCFDFD"/>
+            <Setter Property="Foreground" Value="#27373D"/>
+            <Setter Property="BorderBrush" Value="#D5D9DC"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="DatePicker /template/ TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="DatePickerPresenter">
+            <Style.Resources>
+                <SolidColorBrush x:Key="DatePickerFlyoutPresenterHighlightFill" Color="#D5E3E8"/>
+                <SolidColorBrush x:Key="DatePickerFlyoutPresenterSpacerFill" Color="#D7E0E3"/>
+                <SolidColorBrush x:Key="DateTimePickerFlyoutButtonBackgroundPointerOver" Color="#E5EFF2"/>
+                <SolidColorBrush x:Key="DateTimePickerFlyoutButtonBackgroundPressed" Color="#CEDFE4"/>
+                <Thickness x:Key="DateTimeFlyoutBorderPadding">12</Thickness>
+                <Thickness x:Key="DatePickerFlyoutPresenterItemPadding">0</Thickness>
+                <Thickness x:Key="DatePickerFlyoutPresenterMonthPadding">8,0</Thickness>
+            </Style.Resources>
+            <Setter Property="Background" Value="#F9FCFD"/>
+            <Setter Property="Foreground" Value="#27373D"/>
+            <Setter Property="BorderBrush" Value="#7EA5AE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="FontFamily" Value="Inter"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Border#Background">
+            <Setter Property="ClipToBounds" Value="True"/>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Rectangle#HighlightRect">
+            <Setter Property="RadiusX" Value="7"/>
+            <Setter Property="RadiusY" Value="7"/>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#315F69"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Button#PART_AcceptButton">
+            <Setter Property="Margin" Value="0,10,5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="#487E8B" CornerRadius="7">
+                        <TextBlock Text="Выбрать" Foreground="White" FontSize="13"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Button#PART_DismissButton">
+            <Setter Property="Margin" Value="5,10,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="#F9FCFD" BorderBrush="#7EA5AE" BorderThickness="1" CornerRadius="7">
+                        <TextBlock Text="Отмена" Foreground="#315F69" FontSize="13"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Button#PART_AcceptButton:pointerover /template/ Border">
+            <Setter Property="Background" Value="#396A76"/>
+        </Style>
+        <Style Selector="DatePickerPresenter /template/ Button#PART_DismissButton:pointerover /template/ Border">
+            <Setter Property="Background" Value="#E5EFF2"/>
+        </Style>
+    </Application.Styles>
+</Application>

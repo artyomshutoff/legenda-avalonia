@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{965CB328-4F91-4467-A90D-579D99FAECE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legenda.App", "src\Legenda.App\Legenda.App.csproj", "{A248D8DE-122A-4549-A1EF-98050559C178}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A39D84C8-0129-4EC3-8913-404B6D1E3EDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legenda.App.Tests", "tests\Legenda.App.Tests\Legenda.App.Tests.csproj", "{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A248D8DE-122A-4549-A1EF-98050559C178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A248D8DE-122A-4549-A1EF-98050559C178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A248D8DE-122A-4549-A1EF-98050559C178}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A248D8DE-122A-4549-A1EF-98050559C178}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A248D8DE-122A-4549-A1EF-98050559C178} = {965CB328-4F91-4467-A90D-579D99FAECE5}
+		{3D7C18E6-BF9E-40F8-8937-E2EC922D8CA7} = {A39D84C8-0129-4EC3-8913-404B6D1E3EDE}
+	EndGlobalSection
+EndGlobal

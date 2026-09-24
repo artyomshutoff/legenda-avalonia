@@ -1,0 +1,312 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="Legenda.App.MainWindow" x:CompileBindings="False"
+ Title="Легенда — авторизация" Icon="/Assets/app-icon.ico" Width="1200" Height="705" MinWidth="720" MinHeight="450" WindowStartupLocation="CenterScreen" FontFamily="Inter" Background="#F4F9FC">
+ <Window.Styles>
+  <Style Selector="Button">
+   <Setter Property="HorizontalContentAlignment" Value="Center"/>
+   <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="TextBox">
+   <Setter Property="Height" Value="36"/><Setter Property="MinHeight" Value="36"/><Setter Property="FontSize" Value="13"/>
+   <Setter Property="Padding" Value="9,8"/><Setter Property="CornerRadius" Value="7"/><Setter Property="Background" Value="#FCFDFD"/>
+   <Setter Property="BorderBrush" Value="#D5D9DC"/><Setter Property="Foreground" Value="#222C32"/>
+  </Style>
+  <Style Selector="TextBox:focus /template/ Border#PART_BorderElement"><Setter Property="BorderBrush" Value="#487E8B"/><Setter Property="BorderThickness" Value="1"/></Style>
+  <Style Selector="TextBox.invalid /template/ Border#PART_BorderElement"><Setter Property="BorderBrush" Value="#C54F50"/></Style>
+  <Style Selector="Button.action">
+   <Setter Property="Width" Value="132"/><Setter Property="Height" Value="34"/><Setter Property="MinHeight" Value="34"/>
+   <Setter Property="Padding" Value="8,0"/><Setter Property="CornerRadius" Value="7"/><Setter Property="FontSize" Value="13"/>
+   <Setter Property="Background" Value="#487E8B"/><Setter Property="Foreground" Value="White"/>
+   <Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style Selector="Button.action:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#396A76"/><Setter Property="Foreground" Value="White"/></Style>
+  <Style Selector="Button.action:disabled /template/ ContentPresenter"><Setter Property="Background" Value="#CEDFE4"/><Setter Property="Foreground" Value="#8AA0A6"/></Style>
+  <Style Selector="Button.outline">
+   <Setter Property="Height" Value="34"/><Setter Property="MinHeight" Value="34"/><Setter Property="Padding" Value="22,0"/>
+   <Setter Property="CornerRadius" Value="7"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="#487E8B"/>
+   <Setter Property="Foreground" Value="#27373D"/><Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style Selector="Button.card">
+   <Setter Property="Height" Value="145"/><Setter Property="CornerRadius" Value="18"/><Setter Property="Background" Value="#FBFDFE"/>
+   <Setter Property="BorderBrush" Value="#D7E5E9"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Padding" Value="18,15"/>
+   <Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="VerticalContentAlignment" Value="Stretch"/>
+   <Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style Selector="Button.card:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#EFF7F9"/><Setter Property="BorderBrush" Value="#8FB6C0"/></Style>
+  <Style Selector="Button.setup">
+   <Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+   <Setter Property="Padding" Value="16,12"/><Setter Property="CornerRadius" Value="12"/>
+   <Setter Property="Background" Value="#EAF3F5"/><Setter Property="Foreground" Value="#315F69"/>
+   <Setter Property="BorderBrush" Value="#C4DADF"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style Selector="Button.setup:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#DBEBEF"/><Setter Property="BorderBrush" Value="#6F9BA5"/></Style>
+  <Style Selector="Button.setup:pressed /template/ ContentPresenter"><Setter Property="Background" Value="#CEDFE4"/></Style>
+  <Style Selector="Button.tab"><Setter Property="Height" Value="36"/><Setter Property="MinHeight" Value="36"/><Setter Property="Padding" Value="20,0"/><Setter Property="CornerRadius" Value="7"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Background" Value="#D5E3E8"/><Setter Property="Foreground" Value="#7C9199"/></Style>
+  <Style Selector="Button.tab.active"><Setter Property="Background" Value="#6F9BA5"/><Setter Property="Foreground" Value="White"/></Style>
+  <Style Selector="Button.clientRow"><Setter Property="Height" Value="42"/><Setter Property="MinHeight" Value="42"/><Setter Property="Padding" Value="12,0"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Cursor" Value="Hand"/></Style>
+  <Style Selector="Button.clientRow:pointerover /template/ ContentPresenter"><Setter Property="Background" Value="#EAF3F5"/></Style>
+ </Window.Styles>
+ <Grid x:Name="RootLayout" SizeChanged="OnRootSizeChanged">
+   <Grid.Background><LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%"><GradientStop Color="#FFFFFF" Offset="0"/><GradientStop Color="#EDF6FA" Offset="1"/></LinearGradientBrush></Grid.Background>
+   <Grid x:Name="AuthLayout" ColumnDefinitions="1*,1.15*" Margin="48">
+   <Grid Grid.Column="1">
+   <Viewbox x:Name="LogoView" Stretch="Uniform" Margin="24" MaxWidth="700" MaxHeight="700" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+   <!-- Vector reconstruction of the faceted mark in the supplied Figma frame. -->
+   <Canvas x:Name="LogoCanvas" Width="700" Height="700">
+    <Path Data="M 0,689 L 385,2 L 696,554 L 541,554 L 416,385 L 285,524 L 153,689 Z" Fill="#7A858E"/>
+    <Path Data="M 0,686 L 385,0 L 385,55 L 153,686 Z"><Path.Fill><LinearGradientBrush StartPoint="0%,100%" EndPoint="100%,0%"><GradientStop Color="#C6CEDA" Offset="0"/><GradientStop Color="#A7B3C4" Offset="1"/></LinearGradientBrush></Path.Fill></Path>
+    <Path Data="M 0,686 L 385,55 L 385,274 L 153,686 Z" Fill="#CBD4E0"/>
+    <Path Data="M 385,0 L 696,550 L 385,55 Z" Fill="#B7C2D1"/>
+    <Path Data="M 385,55 L 696,550 L 541,550 L 385,274 Z"><Path.Fill><LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%"><GradientStop Color="#E4EAF3" Offset="0"/><GradientStop Color="#F0F4F9" Offset="1"/></LinearGradientBrush></Path.Fill></Path>
+    <Path Data="M 385,274 L 541,550 L 526,547 L 416,385 L 285,524 L 222,560 Z" Fill="#596167"/>
+    <Path Data="M 153,686 L 388,548 L 388,517 L 184,631 Z" Fill="#ACB7C7"/>
+    <Path Data="M 184,631 L 300,519 L 388,517 Z" Fill="#E4EBF4"/>
+    <Path Data="M 153,686 L 388,548" Stroke="#6C7885" StrokeThickness="1.5"/>
+   </Canvas>
+   </Viewbox>
+   </Grid>
+   <StackPanel x:Name="LoginPanel" Grid.Column="0" MaxWidth="360" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="40">
+    <TextBlock Text="Добро пожаловать" FontSize="24" FontWeight="SemiBold" Foreground="#202930" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+    <TextBox x:Name="LoginBox" Watermark="Введите логин" AutomationProperties.Name="Логин" TextChanged="CredentialsChanged" KeyDown="OnInputKeyDown"/>
+    <Grid Margin="0,24,0,0">
+     <TextBox x:Name="PasswordBox" Watermark="Введите пароль" PasswordChar="●" Padding="9,8,40,8" AutomationProperties.Name="Пароль" TextChanged="CredentialsChanged" KeyDown="OnInputKeyDown"/>
+     <Button x:Name="ShowPasswordButton" Width="34" Height="32" MinHeight="0" Padding="7" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" IsVisible="False" Click="TogglePassword" ToolTip.Tip="Показать пароль" AutomationProperties.Name="Показать пароль">
+      <Path Data="M 1,8 C 5,1 13,1 17,8 C 13,15 5,15 1,8 Z M 11,8 A 2,2 0 1 1 7,8 A 2,2 0 1 1 11,8" Stroke="#75868D" StrokeThickness="1.3" Stretch="Uniform"/>
+     </Button>
+    </Grid>
+    <TextBlock x:Name="ErrorText" IsVisible="False" Foreground="#C54F50" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,0"/>
+    <Grid ColumnDefinitions="132,*,132" Margin="0,30,0,0">
+     <Button x:Name="SignInButton" Classes="action" Content="Войти" IsEnabled="False" Click="SignIn"/>
+     <Button x:Name="GuestButton" Grid.Column="2" Classes="action" Content="Гостевой режим" Click="EnterGuest"/>
+    </Grid>
+    <Button x:Name="SetupAccountButton" Classes="setup" IsVisible="False" Margin="0,20,0,0" Click="SetupAccount" AutomationProperties.Name="Создать первого администратора">
+     <Grid ColumnDefinitions="24,*">
+      <Path Width="22" Height="22" VerticalAlignment="Center" Stretch="Uniform" Stroke="#487E8B" StrokeThickness="1.6" Data="M 12,2 A 4,4 0 1 1 11.99,2 M 3,22 L 3,19 C 3,13 16,13 16,19 M 21,12 L 21,22 M 16,17 L 26,17"/>
+      <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4">
+       <TextBlock Text="Создать первого администратора" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Первый запуск приложения" FontSize="11" Foreground="#708A92"/>
+      </StackPanel>
+     </Grid>
+    </Button>
+   </StackPanel>
+   </Grid>
+   <Grid x:Name="GuestPanel" IsVisible="False" Margin="24">
+    <Grid RowDefinitions="76,*">
+     <Grid Grid.Row="0" ColumnDefinitions="220,*,220">
+      <TextBlock x:Name="GuestClock" Text="20 фев 17:00:00" FontSize="17" VerticalAlignment="Center"/>
+      <TextBlock Grid.Column="1" Text="Гостевой режим" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      <Button Grid.Column="2" Classes="outline" Content="Выйти" HorizontalAlignment="Right" VerticalAlignment="Center" Click="SignOut"/>
+     </Grid>
+     <Grid x:Name="GuestContent" Grid.Row="1" MaxWidth="500" HorizontalAlignment="Stretch" Margin="30,12,30,0" RowDefinitions="Auto,*,Auto,Auto">
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+       <StackPanel>
+        <TextBlock x:Name="ScanHeading" Text="Отсканируйте QR-код" FontSize="17" FontWeight="SemiBold"/>
+        <TextBlock Text="Держите код на расстоянии 10–20 см" Foreground="#7B8C92" FontSize="12" Margin="0,5,0,0"/>
+       </StackPanel>
+      </Grid>
+      <Grid x:Name="ScannerFrame" Grid.Row="1" MinHeight="180" MaxHeight="430">
+       <Border Margin="3" Background="#F7FBFD" CornerRadius="45">
+        <Grid x:Name="CameraViewport" SizeChanged="CameraViewportSizeChanged">
+         <Image x:Name="CameraPreview" Stretch="UniformToFill" IsVisible="False"/>
+         <StackPanel x:Name="CameraPlaceholder" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14">
+          <TextBlock Text="⌗" FontSize="58" Foreground="#A8BBC2" HorizontalAlignment="Center"/>
+          <TextBlock x:Name="CameraCaption" Text="Изображение с камеры" FontSize="17" Foreground="#2C3A40"/>
+          <TextBlock x:Name="CameraStatusText" Text="Подключение к камере…" FontSize="12" Foreground="#8A9CA3" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="330"/>
+          <StackPanel x:Name="CameraPermissionActions" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" IsVisible="False">
+           <Button Classes="outline" Content="Разрешить доступ" Click="OpenCameraSettings"/>
+           <Button Classes="outline" Content="Повторить" Click="RetryCamera"/>
+          </StackPanel>
+         </StackPanel>
+         <Button x:Name="CameraSettingsButton" HorizontalAlignment="Right" VerticalAlignment="Top"
+                 Width="38" Height="38" MinHeight="0" Margin="14" Padding="0"
+                 Content="⚙" FontSize="21" Foreground="#315F69" Background="#EAF3F6"
+                 BorderBrush="#7EA5AE" BorderThickness="1" CornerRadius="19"
+                 ToolTip.Tip="Выбрать камеру">
+          <Button.Flyout>
+           <Flyout Placement="BottomEdgeAlignedRight">
+            <StackPanel Width="260" Spacing="9">
+             <TextBlock Text="Устройство камеры" FontWeight="SemiBold" FontSize="14"/>
+             <ComboBox x:Name="CameraDeviceBox" MinWidth="240" PlaceholderText="Поиск камер…"
+                       SelectionChanged="CameraDeviceChanged"/>
+             <TextBlock x:Name="CameraDeviceHint" Text="Выберите источник изображения"
+                        FontSize="11" Foreground="#7B8C92" TextWrapping="Wrap"/>
+            </StackPanel>
+           </Flyout>
+          </Button.Flyout>
+         </Button>
+        </Grid>
+       </Border>
+       <Border BorderBrush="#5F919D" BorderThickness="3" CornerRadius="48" IsHitTestVisible="False"/>
+      </Grid>
+      <Grid x:Name="ScanResultPanel" Grid.Row="1" Grid.RowSpan="3" IsVisible="False" RowDefinitions="*,Auto,Auto">
+       <Grid MaxWidth="350" MaxHeight="350" Margin="0,0,0,16">
+        <Image x:Name="AcceptedMascot" Source="/Assets/access-accepted.png" Stretch="Uniform" IsVisible="False"/>
+        <Image x:Name="DeniedMascot" Source="/Assets/access-denied.png" Stretch="Uniform" IsVisible="False"/>
+        <Image x:Name="UnknownMascot" Source="/Assets/access-unknown.png" Stretch="Uniform" IsVisible="False"/>
+       </Grid>
+       <TextBlock x:Name="ScanResultText" Grid.Row="1" TextAlignment="Center" TextWrapping="Wrap" FontSize="16" Margin="0,0,0,16"/>
+       <Button x:Name="NextScanButton" Grid.Row="2" Classes="outline" Content="Сканировать ещё" HorizontalAlignment="Center" Click="ResetScanResult"/>
+      </Grid>
+      <TextBox x:Name="ManualCodeBox" Grid.Row="2" Watermark="Введите номер абонемента и нажмите Enter" Margin="0,16,0,0" KeyDown="ManualCodeKeyDown"/>
+      <TextBlock x:Name="ScanMessage" Grid.Row="3" IsVisible="False" HorizontalAlignment="Center" FontSize="14" Margin="0,8,0,0"/>
+     </Grid>
+    </Grid>
+   </Grid>
+
+   <Grid x:Name="AdminPanel" IsVisible="False" Margin="24">
+    <Grid RowDefinitions="76,Auto,50,*">
+     <Grid Grid.Row="0" ColumnDefinitions="200,*,160" Height="76" VerticalAlignment="Top">
+      <TextBlock x:Name="AdminClock" Text="20 фев 17:00:00" FontSize="17" VerticalAlignment="Top" Margin="0,18,0,0" ToolTip.Tip="Текущее время компьютера"/>
+      <TextBlock Grid.Column="1" Text="Панель администратора" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,14,0,0"/>
+      <Button Grid.Column="2" Classes="outline" Content="Выйти" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,0,0" Click="SignOut"/>
+     </Grid>
+     <Grid x:Name="AdminActionsGrid" Grid.Row="1" ColumnDefinitions="*,16,*,16,*,16,*" RowDefinitions="145">
+      <Button x:Name="AllClientsCard" Classes="card" Click="OpenClients" AutomationProperties.Name="Все клиенты">
+       <StackPanel Spacing="8"><Border Width="38" Height="38" CornerRadius="11" Background="#E8F2F5" HorizontalAlignment="Left"><Path Width="19" Height="19" Stroke="#487E8B" StrokeThickness="1.5" Data="M 1,3 L 15,3 L 15,14 L 1,14 Z M 4,6 L 7,6 M 4,9 L 12,9 M 4,12 L 10,12"/></Border><TextBlock Text="Все клиенты" FontSize="16" FontWeight="SemiBold" Foreground="#263A42" TextWrapping="Wrap"/><TextBlock Text="Список и поиск" FontSize="12" Foreground="#778C94" TextWrapping="Wrap"/></StackPanel>
+      </Button>
+      <Button x:Name="AddClientCard" Grid.Column="2" Classes="card" Click="OpenAddClient" AutomationProperties.Name="Добавление клиента">
+       <StackPanel Spacing="8"><Border Width="38" Height="38" CornerRadius="11" Background="#E8F2F5" HorizontalAlignment="Left"><Path Width="19" Height="19" Stroke="#487E8B" StrokeThickness="1.5" Data="M 1,3 L 12,3 L 12,15 L 1,15 Z M 4,7 L 9,7 M 4,10 L 9,10 M 14,6 L 14,14 M 10,10 L 18,10"/></Border><TextBlock Text="Добавить клиента" FontSize="16" FontWeight="SemiBold" Foreground="#263A42" TextWrapping="Wrap"/><TextBlock Text="Новый абонемент" FontSize="12" Foreground="#778C94" TextWrapping="Wrap"/></StackPanel>
+      </Button>
+      <Button x:Name="BlacklistCard" Grid.Column="4" Classes="card" Click="OpenBlacklist" AutomationProperties.Name="Черный список">
+       <StackPanel Spacing="8"><Border Width="38" Height="38" CornerRadius="11" Background="#E8F2F5" HorizontalAlignment="Left"><Path Width="19" Height="19" Stroke="#487E8B" StrokeThickness="1.5" Data="M 8,1 A 7,7 0 1 1 7.99,1 M 3,3 L 13,13"/></Border><TextBlock Text="Чёрный список" FontSize="16" FontWeight="SemiBold" Foreground="#263A42" TextWrapping="Wrap"/><TextBlock Text="Ограничения доступа" FontSize="12" Foreground="#778C94" TextWrapping="Wrap"/></StackPanel>
+      </Button>
+      <Button x:Name="ManagementCard" Grid.Column="6" Classes="card" Click="OpenManagement" AutomationProperties.Name="Журналы и настройки">
+       <StackPanel Spacing="8"><Border Width="38" Height="38" CornerRadius="11" Background="#D9EDF2" HorizontalAlignment="Left"><Path Width="19" Height="19" Stroke="#487E8B" StrokeThickness="1.5" Data="M 2,2 L 14,2 L 14,15 L 2,15 Z M 5,6 L 11,6 M 5,9 L 11,9 M 5,12 L 9,12"/></Border><TextBlock Text="Журналы и настройки" FontSize="16" FontWeight="SemiBold" Foreground="#263A42" TextWrapping="Wrap"/><TextBlock Text="История и параметры" FontSize="12" Foreground="#778C94" TextWrapping="Wrap"/></StackPanel>
+      </Button>
+     </Grid>
+     <Grid Grid.Row="2"><TextBlock Text="Последние посещения" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Bottom" Margin="0,0,0,5"/></Grid>
+     <Grid Grid.Row="3" Margin="0,18,0,0" RowDefinitions="42,*">
+      <Border Background="#EFF5F7" CornerRadius="8">
+       <Grid ColumnDefinitions="*,*,150,*,165" Margin="18,0">
+        <TextBlock Text="Фамилия" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Имя" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="2" Text="Телефон" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <TextBlock x:Name="MembershipColumnHeader" Grid.Column="3" Text="Номер абонемента" FontSize="12" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/><TextBlock x:Name="VisitDateColumnHeader" Grid.Column="4" Text="Дата и время посещения" FontSize="12" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        
+       </Grid>
+      </Border>
+      <ScrollViewer Grid.Row="1"><ItemsControl x:Name="RecentVisitsList">
+       <ItemsControl.ItemTemplate>
+        <DataTemplate>
+         <Grid ColumnDefinitions="*,*,150,*,165" Height="44" Margin="18,0">
+          <Grid.ContextMenu><ContextMenu><MenuItem Header="Копировать данные посещения" Tag="{Binding}" Click="CopyClientData"/></ContextMenu></Grid.ContextMenu>
+          <SelectableTextBlock Text="{Binding LastName}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0" ToolTip.Tip="{Binding LastName}" VerticalAlignment="Center"/><SelectableTextBlock Grid.Column="1" Text="{Binding FirstName}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0" ToolTip.Tip="{Binding FirstName}" VerticalAlignment="Center"/>
+          <SelectableTextBlock Grid.Column="2" Text="{Binding DisplayPhone}" FontSize="13" VerticalAlignment="Center"/>
+          <SelectableTextBlock Grid.Column="3" Text="{Binding MembershipNumber}" VerticalAlignment="Center"/><SelectableTextBlock Grid.Column="4" Text="{Binding VisitedAt}" FontSize="12" VerticalAlignment="Center"/>
+          
+         </Grid>
+        </DataTemplate>
+       </ItemsControl.ItemTemplate>
+      </ItemsControl></ScrollViewer><TextBlock x:Name="NoVisitsText" Grid.Row="1" Text="Посещений пока нет. Отсканируйте QR или введите номер абонемента." TextWrapping="Wrap" Foreground="#7B8C92" Margin="18"/>
+     </Grid>
+    </Grid>
+   </Grid>
+
+   <Grid x:Name="ClientsOverlay" IsVisible="False" Background="#990E171A">
+    <Border x:Name="ClientsDialog" MaxWidth="1050" MaxHeight="610" Margin="32" CornerRadius="24" Background="#F9F9FA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="42,28">
+     <Grid RowDefinitions="52,54,Auto,42,*,Auto">
+      <Grid ColumnDefinitions="*,36" Margin="0,0,0,16">
+       <TextBlock x:Name="ClientsTitle" Text="Все клиенты" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+       <Button Grid.Column="1" Width="36" Height="36" MinHeight="0" Padding="0"
+               CornerRadius="10" Background="#EFF2F3" Foreground="#487E8B" BorderThickness="0"
+               ToolTip.Tip="Закрыть" AutomationProperties.Name="Закрыть список" Click="CloseOverlay">
+        <Path Data="M 2,2 L 12,12 M 12,2 L 2,12" Stroke="#487E8B" StrokeThickness="1.6" Width="14" Height="14"/>
+       </Button>
+      </Grid>
+      <Grid Grid.Row="1" ColumnDefinitions="*,16,Auto" Margin="0,0,0,18">
+       <TextBox x:Name="ClientSearchBox" Watermark="Имя, телефон или абонемент"
+                HorizontalAlignment="Stretch" TextChanged="FilterClients"/>
+       <Button x:Name="ExportClientsButton" Grid.Column="2" Classes="action" Width="166" Height="36"
+               Content="Экспорт в Excel" Click="ExportClients" ToolTip.Tip="Экспорт текущего списка с учётом поиска"/>
+      </Grid>
+      <TextBlock x:Name="ExpiryWarning" Grid.Row="2" Foreground="#B96913" FontSize="12" Margin="0,0,0,6"/><Border Grid.Row="3" Background="#EFF2F3" CornerRadius="7">
+       <Grid ColumnDefinitions="*,*,140,*,*,*,34" Margin="12,0"><TextBlock Text="Фамилия" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="Имя" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="2" Text="Телефон" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="3" Text="Номер абонемента" FontSize="12" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="4" Text="Дата начала" FontSize="12" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center"/><TextBlock Grid.Column="5" Text="Дата окончания" FontSize="12" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center"/></Grid>
+      </Border>
+      <ScrollViewer Grid.Row="4">
+       <ItemsControl x:Name="ClientsList">
+        <ItemsControl.ItemTemplate>
+         <DataTemplate>
+          <Grid ColumnDefinitions="*,*,140,*,*,*,34" Height="42" Margin="12,0">
+           <SelectableTextBlock Text="{Binding LastName}" VerticalAlignment="Center"/><SelectableTextBlock Grid.Column="1" Text="{Binding FirstName}" VerticalAlignment="Center"/>
+           <SelectableTextBlock Grid.Column="2" Text="{Binding DisplayPhone}" FontSize="12" VerticalAlignment="Center"/><SelectableTextBlock Grid.Column="3" Text="{Binding MembershipNumber}" VerticalAlignment="Center"/><SelectableTextBlock Grid.Column="4" Text="{Binding PurchaseDate}" VerticalAlignment="Center"/>
+           <SelectableTextBlock Grid.Column="5" Text="{Binding ExpiryDate}" Foreground="{Binding ExpiryColor}" ToolTip.Tip="{Binding ExpiryHint}" VerticalAlignment="Center"/>
+           <Button Grid.Column="6" Content="⋮" FontSize="20" Width="34" Height="34" MinHeight="0" Padding="0" Background="Transparent" BorderThickness="0" ToolTip.Tip="Действия">
+            <Button.Flyout>
+             <MenuFlyout Placement="BottomEdgeAlignedRight"><MenuItem Header="История и заморозка" Tag="{Binding}" Click="ClientHistory"><MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 15,8 A 7,7 0 1 1 1,8 A 7,7 0 1 1 15,8 M 8,3 L 8,8 L 11,10"/></MenuItem.Icon></MenuItem>
+              <MenuItem Header="Копировать данные клиента" Tag="{Binding}" Click="CopyClientData">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 5,5 L 14,5 L 14,15 L 5,15 Z M 11,3 L 11,1 L 1,1 L 1,11 L 3,11"/></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="Продлить абонемент" Tag="{Binding}" Click="ExtendMembership">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 2,3 L 14,3 L 14,14 L 2,14 Z M 5,1 L 5,5 M 11,1 L 11,5 M 2,7 L 14,7 M 8,9 L 8,13 M 6,11 L 10,11"/></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="Изменить данные" Tag="{Binding}" Click="EditClient">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 2,14 L 3,10 L 11,2 L 14,5 L 6,13 Z M 9,4 L 12,7"/></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="Посмотреть QR-код" Tag="{Binding}" Click="ShowClientQr">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 1,1 L 6,1 L 6,6 L 1,6 Z M 10,1 L 15,1 L 15,6 L 10,6 Z M 1,10 L 6,10 L 6,15 L 1,15 Z M 10,9 L 10,12 L 13,12 L 13,15 L 15,15 M 15,9 L 15,10 M 9,15 L 10,15"/></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{Binding BlacklistActionLabel}" Tag="{Binding}" Click="ToggleBlacklist">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#487E8B" StrokeThickness="1.4" Data="M 15,8 A 7,7 0 1 1 1,8 A 7,7 0 1 1 15,8 M 3,3 L 13,13"/></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="Удалить" Tag="{Binding}" Click="DeleteClient">
+               <MenuItem.Icon><Path Width="16" Height="16" Stroke="#C54F50" StrokeThickness="1.4" Data="M 2,4 L 14,4 M 5,4 L 5,1 L 11,1 L 11,4 M 3,4 L 4,15 L 12,15 L 13,4 M 6,7 L 6,12 M 10,7 L 10,12"/></MenuItem.Icon>
+              </MenuItem>
+             </MenuFlyout>
+            </Button.Flyout>
+           </Button>
+          </Grid>
+         </DataTemplate>
+        </ItemsControl.ItemTemplate>
+       </ItemsControl>
+      </ScrollViewer>
+      <TextBlock x:Name="ClientActionMessage" Grid.Row="5" FontSize="12" Foreground="#3C8B67" TextWrapping="Wrap"/>
+     </Grid>
+    </Border>
+   </Grid>
+
+   <Grid x:Name="AddClientOverlay" IsVisible="False" Background="#990E171A">
+    <Border x:Name="AddClientDialog" MaxWidth="1050" MaxHeight="610" Margin="32" CornerRadius="24" Background="#F9F9FA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="42,28">
+     <Grid RowDefinitions="54,*,50">
+      <Grid ColumnDefinitions="*,40"><TextBlock x:Name="ClientFormTitle" Text="Добавление клиента" FontSize="22" FontWeight="SemiBold"/><Button Grid.Column="1" Content="×" FontSize="26" Background="Transparent" BorderThickness="0" Click="CloseOverlay"/></Grid>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <Grid ColumnDefinitions="1*,24,1*">
+       <StackPanel Spacing="12"><TextBlock Text="Фамилия"/><TextBox x:Name="NewLastName" Watermark="Введите фамилию"/><TextBlock Text="Имя"/><TextBox x:Name="NewFirstName" Watermark="Введите имя"/><TextBlock Text="Отчество"/><TextBox x:Name="NewMiddleName" Watermark="Введите отчество"/>
+        <TextBlock Text="Номер телефона"/>
+        <TextBox x:Name="NewPhone" Watermark="+7 (999) 123-45-67" MaxLength="40" TextChanged="PhoneChanged" AutomationProperties.Name="Номер телефона"/>
+        <TextBlock x:Name="PhoneError" Text="Введите номер: +7 (999) 123-45-67 или 89991234567" IsVisible="False" TextWrapping="Wrap" FontSize="12" Foreground="#C54F50"/>
+       </StackPanel>
+       <StackPanel Grid.Column="2" Spacing="12">
+        <TextBlock Text="Дата рождения"/><DatePicker x:Name="NewBirthDate" Height="36"/>
+        <TextBlock x:Name="CurrentMembershipDates" FontSize="12" Foreground="#7B8C92" TextWrapping="Wrap"/>
+        <CheckBox x:Name="RenewMembership" Content="Продлить с новой даты" IsChecked="True"/>
+        <StackPanel Spacing="12" IsEnabled="{Binding #RenewMembership.IsChecked}">
+         <TextBlock Text="Дата начала абонемента"/>
+         <DatePicker x:Name="MembershipStartDate" Height="36"/>
+         <TextBlock Text="Период абонемента"/>
+         <ComboBox x:Name="MembershipPeriod" Height="36" SelectedIndex="0"><ComboBoxItem Content="1 месяц"/><ComboBoxItem Content="2 месяца"/><ComboBoxItem Content="3 месяца"/><ComboBoxItem Content="6 месяцев"/><ComboBoxItem Content="12 месяцев"/></ComboBox><TextBlock Text="Оплата, ₽ (необязательно)"/><TextBox x:Name="PaymentAmount" Watermark="Например, 2500,00" MaxLength="12"/>
+        </StackPanel>
+        <TextBlock x:Name="AddClientMessage" Foreground="#C54F50" IsVisible="False" TextWrapping="Wrap"/>
+       </StackPanel>
+      </Grid>
+      </ScrollViewer>
+      <Button x:Name="SaveClientButton" Grid.Row="2" Classes="action" Content="Добавить" HorizontalAlignment="Right" Click="AddClient"/>
+     </Grid>
+    </Border>
+   </Grid>
+   <Grid x:Name="ClientQrOverlay" IsVisible="False" Background="#990E171A">
+    <Border MaxWidth="420" MaxHeight="520" Margin="20" Padding="24" CornerRadius="24" Background="#F9FCFD">
+     <Grid RowDefinitions="36,Auto,*,Auto,Auto">
+      <Grid ColumnDefinitions="*,36">
+       <TextBlock Text="QR-код клиента" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+       <Button Grid.Column="1" Content="×" Width="36" Height="36" MinHeight="0" Padding="0" CornerRadius="10" Background="#EFF2F3" BorderThickness="0" Click="CloseClientQr" ToolTip.Tip="Закрыть"/>
+      </Grid>
+      <StackPanel Grid.Row="1" Margin="0,12" Spacing="4">
+       <TextBlock x:Name="QrClientName" FontSize="16" TextWrapping="Wrap"/>
+       <TextBlock x:Name="QrMembershipNumber" Foreground="#7B8C92" FontSize="13"/>
+      </StackPanel>
+      <Image x:Name="ClientQrImage" Grid.Row="2" MaxWidth="280" MaxHeight="280" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="None"/>
+      <TextBlock x:Name="QrSaveMessage" Grid.Row="3" FontSize="12" TextWrapping="Wrap" Margin="0,8"/>
+      <Button x:Name="SaveQrButton" Grid.Row="4" Classes="action" Width="180" Content="Скачать PNG" HorizontalAlignment="Center" Click="SaveClientQr"/>
+     </Grid>
+    </Border>
+   </Grid>
+  </Grid>
+</Window>

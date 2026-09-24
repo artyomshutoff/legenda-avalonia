@@ -1,0 +1,12 @@
+.tools/
+**/bin/
+**/obj/
+artifacts/
+backups/
+dist/
+release/
+*.db
+*.db-shm
+*.db-wal
+*.zip
+.vs/
