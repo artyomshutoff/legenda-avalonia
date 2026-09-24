@@ -124,6 +124,7 @@ public sealed class CloudBackupTests : IDisposable
         var owner = new Window(); owner.Show();
         var prompt = new BackupOnExitWindow(_db, new YandexDiskBackupService(http));
         var result = prompt.ShowDialog<bool>(owner);
+        RenderPrompt(prompt, "backup-ready");
         prompt.GetLogicalDescendants().OfType<Button>().Single(b => b.Name == "SaveBackupButton")
             .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Assert.True(await result.WaitAsync(TimeSpan.FromSeconds(5)));
@@ -153,10 +154,7 @@ public sealed class CloudBackupTests : IDisposable
         await Task.Delay(20);
         Assert.True(prompt.IsVisible);
         Assert.Contains("Подключите", prompt.GetLogicalDescendants().OfType<TextBlock>().Single(t => t.Name == "BackupStatus").Text);
-        Dispatcher.UIThread.RunJobs();
-        Directory.CreateDirectory("../../../../../artifacts/v2");
-        using (var image = new RenderTargetBitmap(new PixelSize(600, 420), new Vector(96, 96)))
-        { image.Render(prompt); image.Save("../../../../../artifacts/v2/backup-on-exit.png"); }
+        RenderPrompt(prompt, "backup-on-exit");
         Button("CancelExitButton").RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
         await Task.Delay(20);
         Assert.True(window.IsVisible);
@@ -166,6 +164,14 @@ public sealed class CloudBackupTests : IDisposable
         await Task.Delay(20);
         Assert.False(window.IsVisible);
         Assert.True(_db.NeedsCloudBackup);
+    }
+
+    private static void RenderPrompt(Window window, string name)
+    {
+        Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("../../../../../artifacts/v2");
+        using var image = new RenderTargetBitmap(new PixelSize((int)Math.Ceiling(window.ClientSize.Width), (int)Math.Ceiling(window.ClientSize.Height)), new Vector(96,96));
+        image.Render(window); image.Save($"../../../../../artifacts/v2/{name}.png");
     }
 
     private sealed class DiskHandler : HttpMessageHandler
