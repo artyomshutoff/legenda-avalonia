@@ -226,6 +226,7 @@ public sealed partial class DatabaseService
     public string RestoreBackup(string source)
     {
         RequireAdministrator();
+        var previousModified=CurrentDatabaseVersion.Modified;
         if(Path.GetFullPath(source).Equals(Path.GetFullPath(DatabasePath),StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Выберите файл резервной копии");
         using var restored=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=source,Mode=SqliteOpenMode.ReadOnly,Pooling=false}.ToString());
@@ -247,6 +248,7 @@ public sealed partial class DatabaseService
         Backup(safety);
         using(var destination=OpenConnection()) restored.BackupDatabase(destination);
         Initialize();
+        MarkSharedRestoration(previousModified);
         using(var db=OpenConnection())
         using(var tx=db.BeginTransaction()) { MarkClientsChanged(db,tx);tx.Commit(); }
         Audit("Восстановлена база",Path.GetFileName(source));Session=null;

@@ -346,6 +346,23 @@ public sealed class ManagementWindow : Window
         })));
         cloud.Children.Add(Action("Отключить Яндекс Диск",()=>{_db.SaveYandexDiskToken("");token.Text="";connection.Text="Диск отключён.";Success("Подключение удалено.");}));
         panel.Children.Add(Card(cloud));
+        var shared=Section("Общая база","Клиенты, посещения, абонементы и учётные записи синхронизируются с Яндекс Диском при запуске и каждые 30 секунд. Без интернета приложение продолжает работать локально.");
+        var automatic=new CheckBox { Content="Автоматическая синхронизация",IsChecked=_db.Setting("SharedSyncEnabled","true")=="true" };
+        automatic.IsCheckedChanged+=(_,_)=>_db.SetSetting("SharedSyncEnabled",automatic.IsChecked==true?"true":"false");
+        shared.Children.Add(automatic);
+        shared.Children.Add(Muted("Используйте один Яндекс Диск на всех компьютерах. Выбирается более новая база целиком; независимые изменения строк не объединяются. Перед заменой сохраняется локальная копия в папке sync-safety рядом с EXE."));
+        var syncStatus=Muted(_db.SharedSync.Status);
+        void UpdateSyncStatus()=>syncStatus.Text=_db.SharedSync.Status;
+        _db.SharedSync.StatusChanged+=UpdateSyncStatus;
+        Closed+=(_,_)=>_db.SharedSync.StatusChanged-=UpdateSyncStatus;
+        shared.Children.Add(syncStatus);
+        shared.Children.Add(Action("Синхронизировать сейчас",async ()=>{
+            var applied=false;
+            await CloudOperation(async ct=>{applied=await _db.SharedSync.SynchronizeAsync(allowApply:true,cancellationToken:ct);Success(_db.SharedSync.Status);});
+            if(applied){DatabaseRestored=true;Close();}
+        }));
+        shared.Children.Add(Muted("На Диске: Легенда / Общая база. Хранятся 10 последних версий. Токен и настройки этого компьютера не передаются в общую базу."));
+        panel.Children.Add(Card(shared));
         var backup=Section("Резервная копия","Копия включает клиентов, историю и учётные записи. Восстановление завершит текущий вход.");
         backup.Children.Add(Action("Сохранить копию базы",async ()=>{
             var file=await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions {Title="Резервная копия",SuggestedFileName=$"Legenda-{DateTime.Now:yyyyMMdd-HHmmss}.db",DefaultExtension="db",ShowOverwritePrompt=true});

@@ -29,6 +29,10 @@ public sealed partial class DatabaseService
 
     public void Initialize()
     {
+        var freshDatabase = !File.Exists(DatabasePath);
+        var initialModified = File.Exists(DatabasePath) ? File.GetLastWriteTimeUtc(DatabasePath) : DateTime.UtcNow;
+        if (File.Exists(DatabasePath + "-wal") && File.GetLastWriteTimeUtc(DatabasePath + "-wal") > initialModified)
+            initialModified = File.GetLastWriteTimeUtc(DatabasePath + "-wal");
         using var connection = OpenConnection();
         using var command = connection.CreateCommand();
         command.CommandText = """
@@ -69,6 +73,7 @@ public sealed partial class DatabaseService
         if (Convert.ToInt64(countCommand.ExecuteScalar(), CultureInfo.InvariantCulture) == 0)
             Seed(connection);
         InitializeV2(connection);
+        InitializeSync(connection, new DateTimeOffset(initialModified).ToUnixTimeMilliseconds(),freshDatabase);
     }
 
     public IReadOnlyList<ClientRecord> LoadClients(bool includeDeleted = false)

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -76,6 +77,37 @@ public partial class MainWindow : Window
         Activated += (_, _) => UpdateClock();
         Closed += (_, _) => clock.Stop();
         clock.Start();
+        if (_authentication is DatabaseAuthenticationService) StartSharedSynchronization();
+    }
+
+    private void StartSharedSynchronization()
+    {
+        var sync = _database.SharedSync;
+        var cancellation = new CancellationTokenSource();
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+        sync.CanApplyRemote = () => !_busy && !AddClientOverlay.IsVisible && !ClientsOverlay.IsVisible &&
+            !ClientQrOverlay.IsVisible && !OwnedWindows.Any(w => w.IsVisible);
+        void StatusChanged()
+        {
+            SharedSyncStatus.Text = sync.Status;
+            ToolTip.SetTip(SharedSyncStatus, sync.Status);
+        }
+        void DatabaseApplied()
+        {
+            ReloadClients(); RefreshVisits(); RefreshClientList();
+            SetupAccountButton.IsVisible = !_database.HasAccounts;
+            if (AdminPanel.IsVisible && _database.Session is null) SignOut(null, new RoutedEventArgs());
+        }
+        sync.StatusChanged += StatusChanged;
+        sync.DatabaseApplied += DatabaseApplied;
+        timer.Tick += async (_, _) => await sync.SynchronizeAsync(cancellationToken:cancellation.Token);
+        Opened += async (_, _) => { timer.Start(); await sync.SynchronizeAsync(cancellationToken:cancellation.Token); };
+        Closed += (_, _) =>
+        {
+            timer.Stop(); cancellation.Cancel();
+            sync.StatusChanged -= StatusChanged; sync.DatabaseApplied -= DatabaseApplied;
+            sync.CanApplyRemote = null;
+        };
     }
 
     private async void ConfirmBackupOnClosing(object? sender, WindowClosingEventArgs e)
