@@ -261,6 +261,8 @@ public partial class MainWindow : Window
     private void ProcessScannedCode(string code)
     {
         if (ScanResultPanel.IsVisible) return;
+        MembershipExpiryBanner.IsVisible = false;
+        MembershipExpiryText.Text = string.Empty;
         ReloadClients();
         var client = _clients.FirstOrDefault(x => x.MembershipNumber.Replace(" ", "") == code.Replace(" ", ""));
         var state = "accepted";
@@ -293,6 +295,17 @@ public partial class MainWindow : Window
             catch { state="denied"; }
             message = $"Код принят!\nОтличной тренировки, {client.FirstName}!";
             if(state=="denied") message="Не удалось записать посещение\nОбратитесь к администратору";
+            else
+            {
+                var daysRemaining = (expiry.Date - DateTime.Today).Days;
+                if (daysRemaining < 7)
+                {
+                    var remaining = daysRemaining == 0 ? "сегодня" :
+                        $"через {daysRemaining} {(daysRemaining == 1 ? "день" : daysRemaining < 5 ? "дня" : "дней")}";
+                    MembershipExpiryText.Text = $"Абонемент заканчивается {remaining}. Продлите его у администратора.";
+                    MembershipExpiryBanner.IsVisible = true;
+                }
+            }
         }
         AcceptedMascot.IsVisible = state == "accepted";
         DeniedMascot.IsVisible = state == "denied";

@@ -397,6 +397,8 @@ public class AuthTests
   foreach (var c in database.LoadClients()) database.DeleteClient(c.Id);
   var today = DateTime.Today.ToString("dd.MM.yyyy");
   database.InsertClient(new ClientRecord("Тестов", "Александр", "active", today, today, false));
+  database.InsertClient(new ClientRecord("Тестов", "Александр", "six-days", today, DateTime.Today.AddDays(6).ToString("dd.MM.yyyy"), false));
+  database.InsertClient(new ClientRecord("Тестов", "Александр", "seven-days", today, DateTime.Today.AddDays(7).ToString("dd.MM.yyyy"), false));
   database.InsertClient(new ClientRecord("Тестов", "Александр", "expired", today, DateTime.Today.AddDays(-1).ToString("dd.MM.yyyy"), false));
   database.InsertClient(new ClientRecord("Тестов", "Александр", "blocked", today, today, true));
   var w = new MainWindow(new DemoAuthenticationService(), database, new DisabledCameraScannerService()) { Width=720, Height=450 };
@@ -404,12 +406,15 @@ public class AuthTests
   {
    w.Show(); Click(Get<Button>(w,"GuestButton"));
    var process = typeof(MainWindow).GetMethod("ProcessScannedCode", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
-   foreach (var (code, mascot) in new[] { ("active","AcceptedMascot"), ("expired","DeniedMascot"), ("blocked","DeniedMascot"), ("unknown","UnknownMascot") })
+   foreach (var (code, mascot, warning) in new[] { ("active","AcceptedMascot",true), ("six-days","AcceptedMascot",true), ("seven-days","AcceptedMascot",false), ("expired","DeniedMascot",false), ("blocked","DeniedMascot",false), ("unknown","UnknownMascot",false) })
    {
     process.Invoke(w, new object[] { code });
     Dispatcher.UIThread.RunJobs();
     Assert.True(Get<Grid>(w,"ScanResultPanel").IsVisible);
     Assert.True(Get<Image>(w,mascot).IsVisible);
+    Assert.Equal(warning, Get<Border>(w,"MembershipExpiryBanner").IsVisible);
+    if (code == "active") Assert.Contains("сегодня", Get<TextBlock>(w,"MembershipExpiryText").Text);
+    if (code == "six-days") Assert.Contains("через 6 дней", Get<TextBlock>(w,"MembershipExpiryText").Text);
     Assert.False(Get<Grid>(w,"ScannerFrame").IsVisible);
     using var image = new RenderTargetBitmap(new PixelSize(720,450), new Vector(96,96));
     image.Render(w);

@@ -137,14 +137,18 @@
        </Border>
        <Border BorderBrush="#5F919D" BorderThickness="3" CornerRadius="48" IsHitTestVisible="False"/>
       </Grid>
-      <Grid x:Name="ScanResultPanel" Grid.Row="1" Grid.RowSpan="3" IsVisible="False" RowDefinitions="*,Auto,Auto">
+      <Grid x:Name="ScanResultPanel" Grid.Row="1" Grid.RowSpan="3" IsVisible="False" RowDefinitions="*,Auto,Auto,Auto">
        <Grid MaxWidth="350" MaxHeight="350" Margin="0,0,0,16">
         <Image x:Name="AcceptedMascot" Source="/Assets/access-accepted.png" Stretch="Uniform" IsVisible="False"/>
         <Image x:Name="DeniedMascot" Source="/Assets/access-denied.png" Stretch="Uniform" IsVisible="False"/>
         <Image x:Name="UnknownMascot" Source="/Assets/access-unknown.png" Stretch="Uniform" IsVisible="False"/>
        </Grid>
        <TextBlock x:Name="ScanResultText" Grid.Row="1" TextAlignment="Center" TextWrapping="Wrap" FontSize="16" Margin="0,0,0,16"/>
-       <Button x:Name="NextScanButton" Grid.Row="2" Classes="outline" Content="Сканировать ещё" HorizontalAlignment="Center" Click="ResetScanResult"/>
+       <Border x:Name="MembershipExpiryBanner" Grid.Row="2" IsVisible="False" MaxWidth="400" HorizontalAlignment="Center"
+               Background="#FFF5E7" BorderBrush="#EBC786" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,14">
+        <TextBlock x:Name="MembershipExpiryText" TextAlignment="Center" TextWrapping="Wrap" Foreground="#8B5A19" FontSize="14" FontWeight="SemiBold"/>
+       </Border>
+       <Button x:Name="NextScanButton" Grid.Row="3" Classes="outline" Content="Сканировать ещё" HorizontalAlignment="Center" Click="ResetScanResult"/>
       </Grid>
       <TextBox x:Name="ManualCodeBox" Grid.Row="2" Watermark="Введите номер абонемента и нажмите Enter" Margin="0,16,0,0" KeyDown="ManualCodeKeyDown"/>
       <TextBlock x:Name="ScanMessage" Grid.Row="3" IsVisible="False" HorizontalAlignment="Center" FontSize="14" Margin="0,8,0,0"/>
