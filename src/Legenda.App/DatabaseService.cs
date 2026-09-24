@@ -118,6 +118,7 @@ public sealed partial class DatabaseService
             ("$id",id),("$at",Stamp()),("$actor",Actor),("$start",client.PurchaseDate),("$end",client.ExpiryDate),
             ("$amount",payment.HasValue ? (object)(long)(payment.Value*100) : DBNull.Value),("$note",$"Первичный абонемент: {client.PurchaseDate} — {client.ExpiryDate}"));
         WriteAudit(connection,transaction,"Добавлен клиент", $"{client.LastName} {client.FirstName}, № {client.MembershipNumber}");
+        MarkClientsChanged(connection, transaction);
         transaction.Commit();
         return client with { Id = id };
     }
@@ -125,6 +126,8 @@ public sealed partial class DatabaseService
     public void UpdateClient(ClientRecord client, decimal? payment = null)
     {
         var previous = LoadClients(true).FirstOrDefault(c => c.Id == client.Id);
+        if (previous is null) throw new InvalidOperationException("Клиент не найден.");
+        if (previous == client && !payment.HasValue) return;
         using var connection = OpenConnection();
         using var transaction = connection.BeginTransaction();
         using var command = connection.CreateCommand();
@@ -150,17 +153,22 @@ public sealed partial class DatabaseService
             $"телефон: {previous?.DisplayPhone} → {client.DisplayPhone}; № {previous?.MembershipNumber} → {client.MembershipNumber}; " +
             $"период: {previous?.PurchaseDate} — {previous?.ExpiryDate} → {client.PurchaseDate} — {client.ExpiryDate}; " +
             $"чёрный список: {previous?.IsBlacklisted} → {client.IsBlacklisted}");
+        MarkClientsChanged(connection, transaction);
         transaction.Commit();
     }
 
     public void DeleteClient(long id)
     {
         using var connection = OpenConnection();
+        using var transaction = connection.BeginTransaction();
         using var command = connection.CreateCommand();
-        command.CommandText = "UPDATE Clients SET Deleted=1 WHERE Id=$id;";
+        command.Transaction = transaction;
+        command.CommandText = "UPDATE Clients SET Deleted=1 WHERE Id=$id AND Deleted=0;";
         command.Parameters.AddWithValue("$id", id);
-        command.ExecuteNonQuery();
-        Audit("Клиент в корзине", $"ID {id}");
+        if (command.ExecuteNonQuery() == 0) return;
+        WriteAudit(connection, transaction, "Клиент в корзине", $"ID {id}");
+        MarkClientsChanged(connection, transaction);
+        transaction.Commit();
     }
 
     private SqliteConnection OpenConnection()

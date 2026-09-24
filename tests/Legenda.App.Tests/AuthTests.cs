@@ -63,7 +63,7 @@ public class AuthTests
  {
   var folder = Path.Combine(Path.GetTempPath(), "LegendaTests", Path.GetRandomFileName());
   var db = new DatabaseService(Path.Combine(folder,"test.db"));
-  var w = new MainWindow(new DemoAuthenticationService(),db,new DisabledCameraScannerService());
+  var w = new MainWindow(new DemoAuthenticationService(),db,new DisabledCameraScannerService(),promptOnClose:false);
   try
   {
    w.Show();
@@ -146,7 +146,7 @@ public class AuthTests
  {
   var folder = Path.Combine(Path.GetTempPath(), "LegendaTests", Path.GetRandomFileName());
   var database = new DatabaseService(Path.Combine(folder, "test.db"));
-  var w = new MainWindow(new DemoAuthenticationService(), database, new DisabledCameraScannerService());
+  var w = new MainWindow(new DemoAuthenticationService(), database, new DisabledCameraScannerService(),promptOnClose:false);
   try
   {
    w.Show();
@@ -175,7 +175,7 @@ public class AuthTests
  private static T Get<T>(MainWindow w, string name) where T : Control => w.FindControl<T>(name)!;
  private static void Click(Button b) => b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
  private static MainWindow CreateWindow(double width = 1200, double height = 705) =>
-  new(new DemoAuthenticationService(), new DatabaseService(), new DisabledCameraScannerService()) { Width = width, Height = height };
+  new(new DemoAuthenticationService(), new DatabaseService(), new DisabledCameraScannerService(),promptOnClose:false) { Width = width, Height = height };
  [AvaloniaFact]
  public void InitialStateAndPasswordVisibility()
  {
@@ -401,7 +401,7 @@ public class AuthTests
   database.InsertClient(new ClientRecord("Тестов", "Александр", "seven-days", today, DateTime.Today.AddDays(7).ToString("dd.MM.yyyy"), false));
   database.InsertClient(new ClientRecord("Тестов", "Александр", "expired", today, DateTime.Today.AddDays(-1).ToString("dd.MM.yyyy"), false));
   database.InsertClient(new ClientRecord("Тестов", "Александр", "blocked", today, today, true));
-  var w = new MainWindow(new DemoAuthenticationService(), database, new DisabledCameraScannerService()) { Width=720, Height=450 };
+  var w = new MainWindow(new DemoAuthenticationService(), database, new DisabledCameraScannerService(),promptOnClose:false) { Width=720, Height=450 };
   try
   {
    w.Show(); Click(Get<Button>(w,"GuestButton"));

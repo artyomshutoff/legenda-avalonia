@@ -153,8 +153,12 @@ public sealed partial class DatabaseService
     public void RestoreClient(long id)
     {
         RequireAdministrator();
-        using var db=OpenConnection();Execute(db,null,"UPDATE Clients SET Deleted=0 WHERE Id=$id",("$id",id));
-        Audit("Клиент восстановлен",$"ID {id}");
+        using var db=OpenConnection();using var tx=db.BeginTransaction();
+        using var command=db.CreateCommand();command.Transaction=tx;
+        command.CommandText="UPDATE Clients SET Deleted=0 WHERE Id=$id AND Deleted=1";command.Parameters.AddWithValue("$id",id);
+        if(command.ExecuteNonQuery()==0)return;
+        WriteAudit(db,tx,"Клиент восстановлен",$"ID {id}");
+        MarkClientsChanged(db,tx);tx.Commit();
     }
     public void FreezeClient(long id,int days)
     {
@@ -171,7 +175,7 @@ public sealed partial class DatabaseService
         Execute(db,tx,"INSERT INTO MembershipHistory(ClientId,At,Actor,StartDate,EndDate,Note) VALUES($id,$at,$actor,$start,$end,$note)",
             ("$id",id),("$at",Stamp()),("$actor",Actor),("$start",client.PurchaseDate),("$end",expiry.AddDays(days).ToString("dd.MM.yyyy")),
             ("$note",$"Заморозка на {days} дн., до {until:dd.MM.yyyy}"));
-        WriteAudit(db,tx,"Заморозка",$"№ {client.MembershipNumber}, {days} дн.");tx.Commit();
+        WriteAudit(db,tx,"Заморозка",$"№ {client.MembershipNumber}, {days} дн.");MarkClientsChanged(db,tx);tx.Commit();
     }
     public void UnfreezeClient(long id)
     {
@@ -184,7 +188,7 @@ public sealed partial class DatabaseService
         Execute(db,tx,"INSERT INTO MembershipHistory(ClientId,At,Actor,StartDate,EndDate,Note) VALUES($id,$at,$actor,$start,$end,$note)",
             ("$id",id),("$at",Stamp()),("$actor",Actor),("$start",client.PurchaseDate),("$end",expiry.ToString("dd.MM.yyyy")),
             ("$note",$"Досрочная разморозка: вычтено {unused} неиспользованных дней"));
-        WriteAudit(db,tx,"Разморозка",$"№ {client.MembershipNumber}");tx.Commit();
+        WriteAudit(db,tx,"Разморозка",$"№ {client.MembershipNumber}");MarkClientsChanged(db,tx);tx.Commit();
     }
     public IReadOnlyList<string> History(long? clientId=null)
     {
@@ -242,7 +246,10 @@ public sealed partial class DatabaseService
         var safety=Path.Combine(Path.GetDirectoryName(DatabasePath)!,"before-restore-"+DateTime.Now.ToString("yyyyMMdd-HHmmss-fff")+".db");
         Backup(safety);
         using(var destination=OpenConnection()) restored.BackupDatabase(destination);
-        Initialize();Audit("Восстановлена база",Path.GetFileName(source));Session=null;
+        Initialize();
+        using(var db=OpenConnection())
+        using(var tx=db.BeginTransaction()) { MarkClientsChanged(db,tx);tx.Commit(); }
+        Audit("Восстановлена база",Path.GetFileName(source));Session=null;
         return safety;
     }
 }

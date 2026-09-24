@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -15,10 +16,14 @@ namespace Legenda.App;
 public sealed class ManagementWindow : Window
 {
     private readonly DatabaseService _db;
+    private readonly bool _openSettings;
+    private CancellationTokenSource? _cloudCancellation;
     private readonly TextBlock _status = new() { TextWrapping=TextWrapping.Wrap, Foreground=Brushes.DarkSlateGray, Margin=new Thickness(0,12,0,0) };
     public bool DatabaseRestored { get; private set; }
-    public ManagementWindow(DatabaseService database,bool setup=false,ClientRecord? client=null)
+    public ManagementWindow(DatabaseService database,bool setup=false,ClientRecord? client=null,bool openSettings=false)
     {
+        _openSettings=openSettings;
+        Closing+=(_,e)=>{if(_cloudCancellation is not null){e.Cancel=true;_cloudCancellation.Cancel();}};
         _db=database;Title=setup?"Легенда — Создание администратора":client is null?"Легенда — Журналы и настройки":$"Легенда — {client.LastName} {client.FirstName}";
         Width=1020;Height=700;MinWidth=740;MinHeight=500;WindowStartupLocation=WindowStartupLocation.CenterOwner;
         Background=Brush.Parse("#F4F9FC");FontFamily="Inter";FontSize=13;
@@ -81,6 +86,7 @@ public sealed class ManagementWindow : Window
         void Page(string title,string description,string icon,Func<Control> factory)
         {
             var button=new Button {Classes={"nav"},Cursor=new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand)};
+            button.Tag=title;
             var label=new TextBlock {Text=title,FontSize=13,FontWeight=FontWeight.Medium,VerticalAlignment=VerticalAlignment.Center,TextTrimming=TextTrimming.CharacterEllipsis};
             var glyph=new Avalonia.Controls.Shapes.Path {Data=Geometry.Parse(icon),Stroke=Brush.Parse("#6F98A3"),StrokeThickness=1.5,Width=17,Height=17,Stretch=Stretch.Uniform,VerticalAlignment=VerticalAlignment.Center};
             var row=new Grid {ColumnDefinitions=new ColumnDefinitions("20,*"),ColumnSpacing=10};row.Children.Add(glyph);Grid.SetColumn(label,1);row.Children.Add(label);button.Content=row;
@@ -108,7 +114,7 @@ public sealed class ManagementWindow : Window
                 Page("Изменения","Действия сотрудников","M 2,2 L 14,2 L 14,15 L 2,15 Z M 5,6 L 11,6 M 5,9 L 11,9 M 5,12 L 9,12",LogPage);
             }
         }
-        if(buttons.Count>0) buttonClick(buttons[0]);
+        if(buttons.Count>0) buttonClick(_openSettings ? buttons.FirstOrDefault(b=>Equals(b.Tag,"Настройки")) ?? buttons[0] : buttons[0]);
         return root;
         static void buttonClick(Button button)=>button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
     }
@@ -121,12 +127,21 @@ public sealed class ManagementWindow : Window
         {
             b.IsEnabled=false;_status.Text="";
             try { await action(); }
-            catch(Exception ex) { _status.Foreground=Brush.Parse("#C54F50");_status.Text=ex is Microsoft.Data.Sqlite.SqliteException ? "Не удалось сохранить данные. Проверьте, нет ли записи с таким логином, и повторите." : ex.Message; }
+            catch(Exception ex) { _status.Foreground=Brush.Parse("#C54F50");_status.Text=ex is OperationCanceledException ? "Операция отменена. Можно закрыть окно." : ex is Microsoft.Data.Sqlite.SqliteException ? "Не удалось сохранить данные. Проверьте, нет ли записи с таким логином, и повторите." : ex.Message; }
             finally { b.IsEnabled=true; }
         };
         return b;
     }
     private Button Action(string title,Action action) => Action(title,()=>{action();return Task.CompletedTask;});
+    private async Task CloudOperation(Func<CancellationToken,Task> action)
+    {
+        if(_cloudCancellation is not null)return;
+        using var cancellation=new CancellationTokenSource();_cloudCancellation=cancellation;
+        var content=(Control)Content!;content.IsEnabled=false;
+        _status.Foreground=Brush.Parse("#487E8B");_status.Text="Подождите, идёт обмен с Яндекс Диском…";
+        try {await action(cancellation.Token);}
+        finally {content.IsEnabled=true;_cloudCancellation=null;}
+    }
     private void Success(string message) { _status.Foreground=Brush.Parse("#3C8B67");_status.Text=message; }
     private static Border Card(Control content) => new() { Background=Brush.Parse("#F8FBFC"),BorderBrush=Brush.Parse("#E0EAED"),BorderThickness=new Thickness(1),CornerRadius=new CornerRadius(12),Padding=new Thickness(15),Child=content };
     private static TextBlock Muted(string value) => new() { Text=value,TextWrapping=TextWrapping.Wrap,Foreground=Brush.Parse("#70868F"),FontSize=12 };
@@ -311,6 +326,26 @@ public sealed class ManagementWindow : Window
             _db.SetSetting("ReturnSeconds",((int)(seconds.Value??5)).ToString());Success("Настройки сохранены");
         }));
         panel.Children.Add(Card(scanner));
+        var cloud=Section("Яндекс Диск","При выходе приложение предложит создать копию, если изменились данные клиентов. Обычные посещения не вызывают это предложение.");
+        var token=new TextBox { Name="YandexDiskTokenBox", Watermark="Вставьте OAuth-токен Яндекс Диска",PasswordChar='●',MaxLength=4096 };
+        var connection=new TextBlock {Text=_db.ReadYandexDiskToken() is null ? "Диск не подключён." : "Токен сохранён. Для замены введите новый.",TextWrapping=TextWrapping.Wrap,Foreground=Brush.Parse("#70868F")};
+        cloud.Children.Add(Muted("OAuth-токен · права чтения и записи файлов"));
+        cloud.Children.Add(token);cloud.Children.Add(connection);
+        cloud.Children.Add(Action("Сохранить и проверить подключение",()=>CloudOperation(async ct=>{
+            var value=string.IsNullOrWhiteSpace(token.Text)?_db.ReadYandexDiskToken():token.Text.Trim();
+            if(string.IsNullOrEmpty(value))throw new InvalidOperationException("Введите OAuth-токен Яндекс Диска.");
+            await new YandexDiskBackupService().CheckConnectionAsync(value,ct);
+            _db.SaveYandexDiskToken(value);token.Text="";connection.Text="Яндекс Диск подключён.";Success("Подключение проверено и сохранено.");
+        })));
+        cloud.Children.Add(Action("Как получить токен",()=>System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://yandex.ru/dev/disk/rest/"){UseShellExecute=true})));
+        cloud.Children.Add(Muted("Папка: Легенда / Резервные копии. Хранятся последние 10 копий; более старые удаляются после успешной загрузки новой. Токен защищён учётной записью Windows — на другом компьютере его нужно ввести заново."));
+        var lastBackup=Muted("Последняя копия: "+_db.Setting("LastCloudBackup","ещё не создавалась"));cloud.Children.Add(lastBackup);
+        cloud.Children.Add(Action("Создать копию на Яндекс Диске",()=>CloudOperation(async ct=>{
+            var name=await new YandexDiskBackupService().BackupAsync(_db,ct);
+            lastBackup.Text="Последняя копия: "+_db.Setting("LastCloudBackup","");Success("Сохранено: "+name);
+        })));
+        cloud.Children.Add(Action("Отключить Яндекс Диск",()=>{_db.SaveYandexDiskToken("");token.Text="";connection.Text="Диск отключён.";Success("Подключение удалено.");}));
+        panel.Children.Add(Card(cloud));
         var backup=Section("Резервная копия","Копия включает клиентов, историю и учётные записи. Восстановление завершит текущий вход.");
         backup.Children.Add(Action("Сохранить копию базы",async ()=>{
             var file=await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions {Title="Резервная копия",SuggestedFileName=$"Legenda-{DateTime.Now:yyyyMMdd-HHmmss}.db",DefaultExtension="db",ShowOverwritePrompt=true});

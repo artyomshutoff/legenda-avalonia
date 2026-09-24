@@ -147,7 +147,7 @@ public sealed class V2Tests : IDisposable
         }
         foreach(var size in new[]{new PixelSize(1200,705),new PixelSize(720,450)})
         {
-            var login=new MainWindow(new DemoAuthenticationService(),_db,new DisabledCameraScannerService()) { Width=size.Width,Height=size.Height };
+            var login=new MainWindow(new DemoAuthenticationService(),_db,new DisabledCameraScannerService(),promptOnClose:false) { Width=size.Width,Height=size.Height };
             login.FindControl<Button>("SetupAccountButton")!.IsVisible=true;
             login.Show();Dispatcher.UIThread.RunJobs();
             Directory.CreateDirectory("../../../../../artifacts/v2");

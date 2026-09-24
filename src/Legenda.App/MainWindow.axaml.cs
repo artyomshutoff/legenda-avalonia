@@ -33,11 +33,13 @@ public partial class MainWindow : Window
     private bool _updatingCameraDevices;
     private bool? _adminActionsCompact;
     private readonly DispatcherTimer _resultTimer = new();
+    private bool _exitApproved;
+    private bool _exitPromptOpen;
     public MainWindow() : this(new DatabaseService()) { }
     private MainWindow(DatabaseService database) : this(new DatabaseAuthenticationService(database), database, new CameraScannerService()) { }
     public MainWindow(IAuthenticationService authentication) : this(authentication, new DatabaseService(), new CameraScannerService()) { }
     public MainWindow(IAuthenticationService authentication, DatabaseService database) : this(authentication, database, new CameraScannerService()) { }
-    public MainWindow(IAuthenticationService authentication, DatabaseService database, ICameraScannerService cameraScanner)
+    public MainWindow(IAuthenticationService authentication, DatabaseService database, ICameraScannerService cameraScanner, bool promptOnClose = true)
     {
         _authentication = authentication;
         _database = database;
@@ -62,6 +64,7 @@ public partial class MainWindow : Window
         _cameraScanner.StatusChanged += OnCameraStatusChanged;
         Closed += async (_, _) => { CloseClientQr(null, new RoutedEventArgs()); await StopCameraAsync(); };
         LoadClients();
+        if (promptOnClose) Closing += ConfirmBackupOnClosing;
         SetupAccountButton.IsVisible = _authentication is DatabaseAuthenticationService && !_database.HasAccounts;
         _resultTimer.Tick += (_, _) => { _resultTimer.Stop(); if(GuestPanel.IsVisible) ResetScanResult(null,new RoutedEventArgs()); };
         Closed += (_, _) => _resultTimer.Stop();
@@ -73,6 +76,25 @@ public partial class MainWindow : Window
         Activated += (_, _) => UpdateClock();
         Closed += (_, _) => clock.Stop();
         clock.Start();
+    }
+
+    private async void ConfirmBackupOnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (_exitApproved || !_database.NeedsCloudBackup) return;
+        e.Cancel = true;
+        if (_exitPromptOpen) return;
+        _exitPromptOpen = true;
+        try
+        {
+            var dialog = new BackupOnExitWindow(_database);
+            if (await dialog.ShowDialog<bool>(this))
+            {
+                _exitApproved = true;
+                Close();
+            }
+            else if (dialog.DatabaseRestored) SignOut(null, new RoutedEventArgs());
+        }
+        finally { _exitPromptOpen = false; }
     }
 
     private void OnRootSizeChanged(object? sender, SizeChangedEventArgs e) => ApplyResponsiveLayout(e.NewSize);
